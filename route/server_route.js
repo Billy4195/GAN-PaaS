@@ -1,5 +1,4 @@
 var bodyParser = require('body-parser');
-var mongoose = require('mongoose');
 var formidable = require('formidable');
 var fs = require('fs');
 var exec = require('child_process').exec;
