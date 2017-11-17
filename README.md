@@ -9,3 +9,5 @@ A server which provide object detection cloud service
 - start server:
 
   ```node app.js```
+
+- browse the website at http://localhost:3000/
