@@ -8,6 +8,25 @@ var mongoose = require('mongoose');
 var bcrypt = require('bcrypt');
 var SaltRound = 10;
 
+function find_projects(User){
+    const user_folder = './images/' + User;
+    console.log(user_folder);
+    var file_array = [];
+    fs.readdirSync(user_folder).forEach(file => {
+        file_array.push(file);
+    })
+    return file_array;
+}
+
+function find_images(User, projects){
+    const user_folder = './images/' + User + '/' + projects;
+    console.log(user_folder);
+    var file_array = [];
+    fs.readdirSync(user_folder).forEach(file => {
+        file_array.push(file);
+    })
+    return file_array;
+}
 
 function connectToMongoDB(){
     mongoose.connect('mongodb://localhost/objectDetection', { useMongoClient:true });
@@ -87,11 +106,11 @@ module.exports = function(app){
     //upload
     app.post('/upload', function(req, res, next){
         var form = new formidable.IncomingForm();
-
         form.multiples = true;
         form.parse(req);
         form.on('fileBegin', function (name, file){
-            file.path = __dirname + '/tmp/' + file.name;
+            console.log(name);
+            file.path = __dirname + '/images/Brian' + '/' +  + file.name;
         });
         form.on('file', function (name, file){
             console.log('Uploaded ' + file.name);
@@ -100,7 +119,7 @@ module.exports = function(app){
     });
     
     app.get('/upload', function(req, res){
-        res.render('uploader',{email: ''});
+        res.render('uploader',{email: '', file_array: find_projects('Brian')});
     });
 
     //handle train get and post
@@ -131,5 +150,10 @@ module.exports = function(app){
 
     app.get('/', function(req, res) {
       res.redirect("/login")
+    });
+
+    app.post('/get_image', function(req, res){
+        console.log(req.body.name);
+        res.send(find_images('Brian', req.body.name));
     });
 };
