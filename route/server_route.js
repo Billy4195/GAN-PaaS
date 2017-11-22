@@ -1,4 +1,5 @@
 var bodyParser = require('body-parser');
+var session = require('express-session');
 var formidable = require('formidable');
 var fs = require('fs');
 var exec = require('child_process').exec;
@@ -6,6 +7,7 @@ var Passport = require('passport');
 var Strategy = require('passport-local').Strategy;
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt');
+var secret = require('../secret');
 var SaltRound = 10;
 
 function find_projects(User){
@@ -66,6 +68,15 @@ function setupPassportAuth(User){
     ));
 }
 
+function checkAuthentication(req,res,next){
+    console.log("CHECK",req.session);
+    if(req.session && req.session.user){
+        next();
+    }else{
+        res.redirect("/login");
+    }
+}
+
 module.exports = function(app){
     var mongoose = connectToMongoDB();
     var User = getOrCreateUserModel();
@@ -74,6 +85,11 @@ module.exports = function(app){
     app.use(bodyParser.urlencoded({extended: true}));
     app.use(bodyParser.json())
     app.use(Passport.initialize());
+    app.use(session({
+      secret: secret,
+      resave: false,
+      saveUninitialized: true,
+    }));
 
     app.post('/signup',function(req, res){
       var hashed_passwd = bcrypt.hashSync(req.body.password,SaltRound);
@@ -100,11 +116,12 @@ module.exports = function(app){
     //login request
     app.post('/login', Passport.authenticate('local', {session:false}),
       function(req, res){
-        res.redirect("/upload")
+        req.session.user = req.user;
+        return res.redirect("/upload")
     });
     
     //upload
-    app.post('/upload', function(req, res, next){
+    app.post('/upload', checkAuthentication, function(req, res, next){
         var form = new formidable.IncomingForm();
         form.multiples = true;
         form.parse(req);
@@ -113,22 +130,22 @@ module.exports = function(app){
             file.path = __dirname + '/images/Brian' + '/' +  + file.name;
         });
         form.on('file', function (name, file){
-            console.log('Uploaded ' + file.name);
         });
         res.send('success');
     });
     
-    app.get('/upload', function(req, res){
+    app.get('/upload', checkAuthentication, function(req, res){
         res.render('uploader',{email: '', file_array: find_projects('Brian')});
+
     });
 
     //handle train get and post
 
-    app.get('/train',function(req, res){
+    app.get('/train', checkAuthentication, function(req, res){
         res.render('train',{email: ''});
     });
 
-    app.post('/train',function(req, res){
+    app.post('/train', checkAuthentication, function(req, res){
         cp = exec("cp -r docker/ controllers/test_user", function (error, stdout, stderr) {
             console.log(stdout);
             console.log(stderr);
@@ -148,11 +165,20 @@ module.exports = function(app){
     
     //index
 
-    app.get('/', function(req, res) {
-      res.redirect("/login")
+    app.get('/', checkAuthentication, function(req, res) {
+        res.redirect('/upload');
     });
 
-    app.post('/get_image', function(req, res){
+    app.get('/logout', function(req,res,next){
+        if(req.session){
+            req.session.destroy(function(err){
+              if(err) return next(err);
+              else return res.redirect('/');
+            })
+        }
+    });
+
+    app.post('/get_image', checkAuthentication ,function(req, res){
         console.log(req.body.name);
         res.send(find_images('Brian', req.body.name));
     });
