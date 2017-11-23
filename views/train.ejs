@@ -25,12 +25,7 @@
 
         <link href="../web_asset/css/styles.css" rel="stylesheet">
 
-        <!-- for jGallery -->
-        <link rel="stylesheet" type="text/css" media="all" href="../web_asset/css/font-awesome.min.css" />
-        <link rel="stylesheet" type="text/css" media="all" href="../web_asset/css/jgallery.min.css?v=1.6.0" />
         <script type="text/javascript" src="../web_asset/js/jgallery/jquery-2.0.3.min.js"></script>
-        <script type="text/javascript" src="../web_asset/js/jgallery/jgallery.min.js?v=1.6.0"></script>
-        <script type="text/javascript" src="../web_asset/js/jgallery/tinycolor-0.9.16.min.js"></script>
 
         <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -40,102 +35,19 @@
         <![endif]-->
     </head>
     <body>
-        <div id="dialog-form" title="Create New Project">
-            <p class="validateTips">All form fields are required.</p>
-                   
-            <form>
-                <fieldset>
-                    <label for="name">Name</label>
-                    <input type="text" name="name" id="name" class="text ui-widget-content ui-corner-all">
-                   
-                <!-- Allow form submission with keyboard without duplicating the dialog button -->
-                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-                </fieldset>
-            </form>
-        </div>
         <div id="wrapper">
-            <!-- Navigation -->
-            <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-                <div class="navbar-header">
-                    <a class="navbar-brand" href="upload">Model Incubator</a>
-                </div>
-                
-                <ul class="nav navbar-right navbar-top-links">
-                    <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                            <i class="fa fa-user fa-list"></i> 
-                                menu
-                            <b class="caret"></b>
-                        </a>
-                        <ul class="dropdown-menu dropdown-user">
-                            <li>
-                                <a href="#"><i class="fa fa-user fa-plus"></i> Add Project</a>
-                            </li>
-                            <li>
-                                <a href="#"><i class="fa fa-gear fa-minus"></i> Delete Project </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                            <i class="fa fa-user fa-fw"></i> 
-                            <% if (first_name) { %>
-                                <%= first_name %> 
-                            <% } %>
-                            <b class="caret"></b>
-                        </a>
-                        <ul class="dropdown-menu dropdown-user">
-                            <li>
-                                <a href="#"><i class="fa fa-user fa-fw"></i> User Profile</a>
-                            </li>
-                            <li>
-                                <a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
-                            </li>
-                            <li class="divider"></li>
-                            <li>
-                                <a href="logout"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-                <!-- /.navbar-top-links -->
-
-                <div class="navbar-default sidebar" role="navigation">
-                    <div class="sidebar-nav navbar-collapse">
-                        <ul class="nav" id="side-menu">
-                            <div class="form-group">
-                                <label>Select Project</label>
-                                <select id="selector" class="form-control">
-                                  
-                                        <% for(var i = 0 ; i < file_array.length ; i++) { %>
-                                            <% if(file_array[i] != '.DS_Store'){ %>
-                                                <option> <%= file_array[i] %> </option> 
-                                            <% } %>
-                                        <% } %>
-                                </select>
-                            </div>
-                            <li>
-                                <a href="upload"><i class="fa fa-dashboard fa-fw"></i> Data Set</a>
-                            </li>
-                            <li>
-                                <a href="train"><i class="fa fa-edit fa-fw"></i> Start Training</a>
-                            </li>
-                            <li>
-                                <a href="evaluation"><i class="fa fa-table fa-fw"></i> Evaluation</a>
-                            </li>
-                        </ul>
-                    </div>
-                    <!-- /.sidebar-collapse -->
-                </div>
-                <!-- /.navbar-static-side -->
-            </nav>
+            <%- include bars.ejs %>
             <div id="page-wrapper">
-
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h1 class="page-header">Start Training</h1>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="panel tabbed-panel panel-default">
                             <div class="panel-heading clearfix">
-                                <div class="panel-title pull-left">Start Training</div>
+                                <div class="panel-title pull-left"></div>
                                 <div class="pull-right">
                                     <ul class="nav nav-tabs">
                                         <li class="active"><a href="#tab-default-1" data-toggle="tab">Start</a></li>
@@ -149,10 +61,6 @@
             </div>
             
 <!-- /#wrapper -->
-        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-        <input id="upload-input" type="file" name="uploads[]" multiple="multiple" accept="image/png, image/jpeg, image/jpg"></br>
-        <!-- jQuery -->
-        
             <!-- Bootstrap Core JavaScript -->
             <script src="../web_asset/js/bootstrap.min.js"></script>
         

@@ -8,7 +8,7 @@ A server which provide object detection cloud service
 
 - run mongo db docker container
   
-  ```docker run -name mongo -d mongo```
+  ```docker run -name mongo -p 27017:27017 -d mongo```
 
 - start server:
 
