@@ -74,7 +74,6 @@ function setupPassportAuth(User){
 }
 
 function checkAuthentication(req,res,next){
-    console.log("CHECK",req.session);
     if(req.session && req.session.user){
         next();
     }else{
@@ -198,5 +197,16 @@ module.exports = function(app){
         image_list.push(req.session.user.email);
         console.log(image_list);
         res.send(image_list);
+    });
+
+    app.get('/addProject', checkAuthentication, function(req,res){
+        res.render('addProject',{first_name: req.session.user.first_name, file_array: find_projects(req.session.user.email, req.session.project)});
+    });
+    app.post('/addProject', checkAuthentication, function(req,res){
+        newDirName = './images/' + req.session.user.email + '/' + req.body.newProjectName;
+        if(!fs.existsSync(newDirName)){
+          fs.mkdirSync(newDirName)
+        }
+        res.redirect("/upload");
     });
 };
