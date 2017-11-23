@@ -1,10 +1,14 @@
-# Object-Detection-PaaS-
+# Object-Detection-PaaS
 A server which provide object detection cloud service
 
 ## Usage
 - install nodejs dependency:
 
   ```npm install```
+
+- run mongo db docker container
+  
+  ```docker run -name mongo -d mongo```
 
 - start server:
 
