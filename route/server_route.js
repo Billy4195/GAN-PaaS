@@ -10,22 +10,27 @@ var bcrypt = require('bcrypt');
 var secret = require('../secret');
 var SaltRound = 10;
 
-function find_projects(User){
+function find_projects(User, current_project){
     const user_folder = './images/' + User;
-    console.log(user_folder);
     var file_array = [];
+    if(current_project !== 'empty'){
+        file_array.push(current_project);
+    }
     fs.readdirSync(user_folder).forEach(file => {
-        file_array.push(file);
+        if(file !== '.DS_Store' && file !== current_project){
+            file_array.push(file);
+        }
     })
     return file_array;
 }
 
 function find_images(User, projects){
     const user_folder = './images/' + User + '/' + projects;
-    console.log(user_folder);
     var file_array = [];
     fs.readdirSync(user_folder).forEach(file => {
-        file_array.push(file);
+        if(file !== '.DS_Store'){
+            file_array.push(file);
+        }
     })
     return file_array;
 }
@@ -105,6 +110,13 @@ module.exports = function(app){
       if(!req.body){
          return res.returnStatus(400);
       }
+      else{
+         var dir = './images/' + req.body.email;
+        
+         if (!fs.existsSync(dir)){
+            fs.mkdirSync(dir);
+         }
+      }
       res.redirect("/login");
     });
     
@@ -126,8 +138,7 @@ module.exports = function(app){
         form.multiples = true;
         form.parse(req);
         form.on('fileBegin', function (name, file){
-            console.log(name);
-            file.path = __dirname + '/images/Brian' + '/' +  + file.name;
+            file.path = './images/' + req.session.user.email + '/' + req.session.project + '/' + file.name;
         });
         form.on('file', function (name, file){
         });
@@ -135,14 +146,16 @@ module.exports = function(app){
     });
     
     app.get('/upload', checkAuthentication, function(req, res){
-        res.render('uploader',{email: '', file_array: find_projects('Brian')});
-
+        if(req.session.project === undefined){
+            req.session.project = 'empty';
+        }
+        res.render('uploader',{first_name: req.session.user.first_name, file_array: find_projects(req.session.user.email, req.session.project)});
     });
 
     //handle train get and post
 
     app.get('/train', checkAuthentication, function(req, res){
-        res.render('train',{email: ''});
+        res.render('train',{first_name: req.session.user.first_name, file_array: find_projects(req.session.user.email, req.session.project)});
     });
 
     app.post('/train', checkAuthentication, function(req, res){
@@ -179,7 +192,11 @@ module.exports = function(app){
     });
 
     app.post('/get_image', checkAuthentication ,function(req, res){
-        console.log(req.body.name);
-        res.send(find_images('Brian', req.body.name));
+        req.session.project = req.body.name;
+        console.log(req.session.user.email);
+        var image_list = find_images(req.session.user.email, req.body.name);
+        image_list.push(req.session.user.email);
+        console.log(image_list);
+        res.send(image_list);
     });
 };

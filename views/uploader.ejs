@@ -61,14 +61,26 @@
                 </div>
                 
                 <ul class="nav navbar-right navbar-top-links">
-                    <button id="create-user" type="button" class="btn btn-primary btn-circle btn-md" title="Add New Project">
-                        <i class="fa fa-plus"></i>
-                    </button>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-user fa-list"></i> 
+                                menu
+                            <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li>
+                                <a href="#"><i class="fa fa-user fa-plus"></i> Add Project</a>
+                            </li>
+                            <li>
+                                <a href="#"><i class="fa fa-gear fa-minus"></i> Delete Project </a>
+                            </li>
+                        </ul>
+                    </li>
                     <li class="dropdown">
                         <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                             <i class="fa fa-user fa-fw"></i> 
-                            <% if (email) { %>
-                                <%= email %> 
+                            <% if (first_name) { %>
+                                <%= first_name %> 
                             <% } %>
                             <b class="caret"></b>
                         </a>
@@ -81,7 +93,7 @@
                             </li>
                             <li class="divider"></li>
                             <li>
-                                <a href="login"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+                                <a href="logout"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
                             </li>
                         </ul>
                     </li>
@@ -94,7 +106,6 @@
                             <div class="form-group">
                                 <label>Select Project</label>
                                 <select id="selector" class="form-control">
-                                    <option>select a project</option>
                                         <% for(var i = 0 ; i < file_array.length ; i++) { %>
                                             <% if(file_array[i] != '.DS_Store'){ %>
                                                 <option> <%= file_array[i] %> </option> 
@@ -146,7 +157,7 @@
         </div>
 <!-- /#wrapper -->
         <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-        <input id="upload-input" type="file" name="uploads[]" multiple="multiple"></br>
+        <input id="upload-input" type="file" name="uploads[]" multiple="multiple" accept="image/png, image/jpeg, image/jpg"></br>
         <!-- jQuery -->
         
             <!-- Bootstrap Core JavaScript -->

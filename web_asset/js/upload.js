@@ -29,7 +29,7 @@ if (files.length > 0){
     contentType: false,
     success: function(data){
         console.log('upload successful!\n' + data);
-        location.relocate();
+        location.reload();
     },
     xhr: function() {
       // create an XMLHttpRequest
@@ -62,42 +62,30 @@ if (files.length > 0){
 }
 });
 
-$( function() {
-  $(' #gallery ').jGallery( {backgroundColor: 'white', textColor: 'red'} );
-} );
 
 
-$(function() {
-  $('#selector').change(function() {
-    name = $('#selector').val();
-
-    // Destroy the old gallery.
-    
-    $('#gallery').jGallery().destroy();
-
-    $('#gallery').html('');
-
-    if(name != 'select a project')
-    {
-      $.ajax({
-        url: '/get_image',
-        type: 'POST',
-        data: ({name: name}),
-        success: function(data){
-          // Switch to the correct images.
-          for(var i = 0 ; i < data.length ; i++){
-            if(data[i] != '.DS_Store')
-            {
-              var path = 'images/Brian/' + name + '/' + data[i];
+$(document).ready(function() {
+      name = $('#selector').val();
+      // Destroy the old gallery.
+  
+      if(name != 'select a project')
+      {
+        $.ajax({
+          url: '/get_image',
+          type: 'POST',
+          data: ({name: name}),
+          success: function(data){
+            // Switch to the correct images.
+            for(var i = 0 ; i < data.length-1 ; i++){
+              
+              var path = 'images/' + data[data.length-1] + '/' + name + '/' + data[i];
               //$('#gallery').append('<a href="route/ + Brian' + name + '/1.jpeg"><img src="route/' + name + '/1.jpeg" alt="Photo 1" /></a>');
               $('#gallery').append('<a href="' + path + '"><img src="' + path + '" alt=' + data[i] + '"/></a>');
-            }
-          } 
-          // Re-initialize jGallery.
-          $('#gallery').jGallery( {backgroundColor: 'white', textColor: 'red'} );
-        }
-      });
-    }
-  })
-});
+            } 
+            // Re-initialize jGallery.
+            $('#gallery').jGallery( {backgroundColor: 'white', textColor: 'red'} );
+          }
+        });
+      }
+    })
 
