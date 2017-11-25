@@ -1,0 +1,37 @@
+.tab-group {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 40px 0;
+}
+.tab-group:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+.tab-group li a {
+    display: block;
+    text-decoration: none;
+    padding: 15px;
+    background: rgba(160, 179, 176, 0.25);
+    color: #a0b3b0;
+    font-size: 20px;
+    float: left;
+    width: 50%;
+    text-align: center;
+    cursor: pointer;
+    -webkit-transition: .5s ease;
+    transition: .5s ease;
+}
+.tab-group li a:hover {
+    background: #e2dedb;
+    color: #a0b3b0;
+}
+.tab-group .active a {
+    background: #796c83;
+    color: #a0b3b0;
+}
+.tab-content > div:last-child {
+    display: none;
+}
+  
+  

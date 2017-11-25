@@ -64,7 +64,7 @@ if (files.length > 0){
 
 
 
-$(document).ready(function() {
+$(function() {
       name = $('#selector').val();
       // Destroy the old gallery.
   
@@ -78,7 +78,7 @@ $(document).ready(function() {
             // Switch to the correct images.
             for(var i = 0 ; i < data.length-1 ; i++){
               
-              var path = 'images/' + data[data.length-1] + '/' + name + '/' + data[i];
+              var path = 'images/' + data[data.length-1] + '/' + name + '/train/' + data[i];
               //$('#gallery').append('<a href="route/ + Brian' + name + '/1.jpeg"><img src="route/' + name + '/1.jpeg" alt="Photo 1" /></a>');
               $('#gallery').append('<a href="' + path + '"><img src="' + path + '" alt=' + data[i] + '"/></a>');
             } 

@@ -2,6 +2,7 @@ var bodyParser = require('body-parser');
 var session = require('express-session');
 var formidable = require('formidable');
 var fs = require('fs');
+var rimraf = require('rimraf');
 var exec = require('child_process').exec;
 var Passport = require('passport');
 var Strategy = require('passport-local').Strategy;
@@ -25,7 +26,7 @@ function find_projects(User, current_project){
 }
 
 function find_images(User, projects){
-    const user_folder = './images/' + User + '/' + projects;
+    const user_folder = './images/' + User + '/' + projects + '/train';
     var file_array = [];
     fs.readdirSync(user_folder).forEach(file => {
         if(file !== '.DS_Store'){
@@ -137,7 +138,7 @@ module.exports = function(app){
         form.multiples = true;
         form.parse(req);
         form.on('fileBegin', function (name, file){
-            file.path = './images/' + req.session.user.email + '/' + req.session.project + '/' + file.name;
+            file.path = './images/' + req.session.user.email + '/' + req.session.project + '/train/' + file.name;
         });
         form.on('file', function (name, file){
         });
@@ -154,29 +155,81 @@ module.exports = function(app){
     //handle train get and post
 
     app.get('/train', checkAuthentication, function(req, res){
-        res.render('train',{first_name: req.session.user.first_name, file_array: find_projects(req.session.user.email, req.session.project)});
+        if(req.session.status !== true){
+            res.render('start_train',{first_name: req.session.user.first_name, file_array: find_projects(req.session.user.email, req.session.project)});            
+        }
+        else{
+            res.render('stop_train',{first_name: req.session.user.first_name, file_array: find_projects(req.session.user.email, req.session.project)});            
+        }
     });
 
-    app.post('/train', checkAuthentication, function(req, res){
-        cp = exec("cp -r docker/ controllers/test_user", function (error, stdout, stderr) {
-            console.log(stdout);
-            console.log(stderr);
+    app.post('/start_train', checkAuthentication, function(req, res){
+        req.session.status = true;
+        var train_command = "python ./pix2pix-tensorflow/tools/dockrun.py python ./pix2pix-tensorflow/pix2pix.py \
+        --mode train \
+        --output_dir images/" + req.session.user.email + "/" + req.session.project + "/" + req.session.project + "_train \
+        --max_epochs 200 \
+        --input_dir images/" + req.session.user.email + "/" + req.session.project + "/train/ \
+        --which_direction BtoA";
+        console.log(train_command);
+        var train = exec(train_command, function (error, stdout, stderr) {
             if (error !== null) {
               console.log('exec error: ' + error);
             }
-            docker = exec("docker run -i -v ~/Desktop/國網server/controllers/test_user:/docker object_detection bash /docker/run.sh", function (error, stdout, stderr) {
-                console.log(stdout);
-                console.log(stderr);
-                if (error !== null) {
-                  console.log('exec error: ' + error);
-                }
-            });
+            
         });
-        res.render('start_training');
+        res.redirect('/train');
     });
-    
-    //index
 
+
+///////////////////////////////////////////////////////todo//////////////////////////////////////////////
+    app.post('/stop_train', checkAuthentication, function(req, res){
+        req.session.status = false;
+        /*
+        var command = ;
+        console.log(train_command);
+        var train = exec(train_command, function (error, stdout, stderr) {
+            if (error !== null) {
+              console.log('exec error: ' + error);
+            }
+            
+        });
+        */
+        res.redirect('/train');
+        
+    });
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
+    app.get('/evaluation', checkAuthentication, function(req,res){
+        res.render('evaluation',{first_name: req.session.user.first_name, file_array: find_projects(req.session.user.email, req.session.project)});
+    });
+
+    app.post('/evaluation', checkAuthentication, function(req, res, next){
+        var form = new formidable.IncomingForm();
+        form.multiples = true;
+        form.parse(req);
+        form.on('fileBegin', function (name, file){
+            file.path = './images/' + req.session.user.email + '/' + req.session.project + '/test/' + file.name;
+        });
+        form.on('file', function (name, file){
+        });
+        var test_command = "python ./pix2pix-tensorflow/tools/dockrun.py python ./pix2pix-tensorflow/pix2pix.py \
+        --mode test \
+        --output_dir images/" + req.session.user.email + "/" + req.session.project + "/" + req.session.project + "_test \
+        --max_epochs 200 \
+        --input_dir images/" + req.session.user.email + "/" + req.session.project + "/test/ \
+        --checkpoint images/" + req.session.user.email + "/" + req.session.project + "/" + req.session.project + "_train";
+        console.log(test_command);
+        var train = exec(test_command, function (error, stdout, stderr) {
+            if (error !== null) {
+              console.log('exec error: ' + error);
+            }
+            
+        });
+        res.send('success');
+    });
+
+    //index
     app.get('/', checkAuthentication, function(req, res) {
         res.redirect('/upload');
     });
@@ -203,10 +256,18 @@ module.exports = function(app){
         res.render('addProject',{first_name: req.session.user.first_name, file_array: find_projects(req.session.user.email, req.session.project)});
     });
     app.post('/addProject', checkAuthentication, function(req,res){
-        newDirName = './images/' + req.session.user.email + '/' + req.body.newProjectName;
+        var newDirName = './images/' + req.session.user.email + '/' + req.body.newProjectName;
         if(!fs.existsSync(newDirName)){
           fs.mkdirSync(newDirName)
+          fs.mkdirSync(newDirName + '/train');
+          fs.mkdirSync(newDireName + '/test');
         }
         res.redirect("/upload");
+    });
+    app.get('/deleteProject', checkAuthentication, function(req,res){
+        DirName = './images/' + req.session.user.email + '/' + req.session.project;
+        req.session.project = find_projects(req.session.user.email, req.session.project)[1];
+        rimraf(DirName, function () { console.log('done'); });
+        res.redirect('/upload');
     });
 };
