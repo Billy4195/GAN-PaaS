@@ -2,7 +2,6 @@
 node_modules/*
 *.swp
 package-lock.json
-images/*
 # secret file
 
 secret.js
