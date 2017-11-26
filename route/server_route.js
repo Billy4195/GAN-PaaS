@@ -165,6 +165,7 @@ module.exports = function(app){
 
     app.post('/start_train', checkAuthentication, function(req, res){
         req.session.status = true;
+        req.session.train_ps = null;
         var train_command = "python ./pix2pix-tensorflow/tools/dockrun.py python ./pix2pix-tensorflow/pix2pix.py \
         --mode train \
         --output_dir images/" + req.session.user.email + "/" + req.session.project + "/" + req.session.project + "_train \
@@ -178,25 +179,20 @@ module.exports = function(app){
             }
             
         });
+        req.session.train_ps = train
         res.redirect('/train');
     });
 
 
 ///////////////////////////////////////////////////////todo//////////////////////////////////////////////
     app.post('/stop_train', checkAuthentication, function(req, res){
+        if(req.session.status && req.session.train_ps){
+            req.session.train_ps.kill();
+            // send SIGTERM to child process
+            // TODO: Setting a timer to check the child process actually been killed, or send SIGKILL to that process. 
+        }
         req.session.status = false;
-        /*
-        var command = ;
-        console.log(train_command);
-        var train = exec(train_command, function (error, stdout, stderr) {
-            if (error !== null) {
-              console.log('exec error: ' + error);
-            }
-            
-        });
-        */
         res.redirect('/train');
-        
     });
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
     
