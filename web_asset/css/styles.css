@@ -2,11 +2,28 @@
     outline: 0 !important;
   }
   
-  
+  .image_block {
+    box-shadow: 10px 10px 10px rgba(0,0,0,.07);
+    margin-top: 20px;
+  }
+  .image_block img{
+    max-width:100%;
+    _width:expression(this.width > 100% ? "100%" : this.width);
+  }
+
+  .rmImg-btn {
+    color: #ffffff;
+    background-color: #F89406;
+    border: none;
+    position: relative;
+    width: 100%;
+  }
+
   .upload-btn {
     color: #ffffff;
     background-color: #F89406;
     border: none;
+    width: 100%;
   }
 
   .training-btn {
@@ -27,5 +44,15 @@
   #upload-input {
     display: none;
   }
+
+  body {
+    padding: 30px 0;
+    position: relative;
+  }
+  
+ 
+  
+ 
+  
   
 

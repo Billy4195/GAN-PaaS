@@ -62,12 +62,28 @@ if (files.length > 0){
 }
 });
 
+$('.rmImg-btn').on('click', function (){
+  var path="";
+  console.log('hello');
+  console.log(path);
+  $.ajax({
+    url: '/deleteImage',
+    type: 'POST',
+    data: ({path: path}),
+    processData: false,
+    contentType: false,
+    success: function(data){
+        console.log('delete successful!\n' + data);
+        location.reload();
+    }
+  });
+});
+
 
 
 $(function() {
-      name = $('#selector').val();
-      // Destroy the old gallery.
-  
+      name = $('#sources').val();
+      
       if(name != 'select a project')
       {
         $.ajax({
@@ -78,12 +94,16 @@ $(function() {
             // Switch to the correct images.
             for(var i = 0 ; i < data.length-1 ; i++){
               
-              var path = 'images/' + data[data.length-1] + '/' + name + '/train/' + data[i];
-              //$('#gallery').append('<a href="route/ + Brian' + name + '/1.jpeg"><img src="route/' + name + '/1.jpeg" alt="Photo 1" /></a>');
-              $('#gallery').append('<a href="' + path + '"><img src="' + path + '" alt=' + data[i] + '"/></a>');
+              var path = './images/' + data[data.length-1] + '/' + name + '/train/' + data[i];
+              content= '<div class="col-lg-4"> \
+                        <div class=image_block>\
+                        <div class="img-w"><img src="' + path + '"alt="' + data[i] + '"/></div>\
+                        <button class="btn btn-md rmImg-btn" type="button" name="' + path + '">Delete</button>\
+                        </div>\
+                        </div>\
+                        '
+              $('#gallery').append(content);
             } 
-            // Re-initialize jGallery.
-            $('#gallery').jGallery( {backgroundColor: 'white', textColor: 'red'} );
           }
         });
       }

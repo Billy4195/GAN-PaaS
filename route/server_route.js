@@ -138,7 +138,13 @@ module.exports = function(app){
         form.multiples = true;
         form.parse(req);
         form.on('fileBegin', function (name, file){
-            file.path = './images/' + req.session.user.email + '/' + req.session.project + '/train/' + file.name;
+            file.path = './images/' + req.session.user.email + '/' + req.session.project + '/train/' + file.name;  
+            var i = 0;          
+            while(fs.existsSync(file.path)){
+                i++;
+                file.path = './images/' + req.session.user.email + '/' + req.session.project + '/train/' + i + '_' + file.name; 
+            }
+
         });
         form.on('file', function (name, file){
         });
@@ -251,15 +257,26 @@ module.exports = function(app){
     app.get('/addProject', checkAuthentication, function(req,res){
         res.render('addProject',{first_name: req.session.user.first_name, file_array: find_projects(req.session.user.email, req.session.project)});
     });
+    
     app.post('/addProject', checkAuthentication, function(req,res){
         var newDirName = './images/' + req.session.user.email + '/' + req.body.newProjectName;
         if(!fs.existsSync(newDirName)){
           fs.mkdirSync(newDirName)
           fs.mkdirSync(newDirName + '/train');
-          fs.mkdirSync(newDireName + '/test');
+          fs.mkdirSync(newDirName + '/test');
         }
         res.redirect("/upload");
     });
+    
+    app.post('/deleteImage', checkAuthentication, function(req,res){
+        var image_path = req.body.path;
+        console.log('delete image');
+        if(!fs.existsSync(image_path)){
+          fs.unlinkSync(image_path)
+        }
+        res.redirect("/upload");
+    });
+    
     app.get('/deleteProject', checkAuthentication, function(req,res){
         DirName = './images/' + req.session.user.email + '/' + req.session.project;
         req.session.project = find_projects(req.session.user.email, req.session.project)[1];
