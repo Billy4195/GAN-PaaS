@@ -62,7 +62,7 @@ if (files.length > 0){
 }
 });
 
-$('.rmImg-btn').on('click', function (){
+var rmImage =  function (){
   var path="";
   console.log('hello');
   console.log(path);
@@ -77,7 +77,7 @@ $('.rmImg-btn').on('click', function (){
         location.reload();
     }
   });
-});
+};
 
 
 
@@ -98,7 +98,7 @@ $(function() {
               content= '<div class="col-lg-4"> \
                         <div class=image_block>\
                         <div class="img-w"><img src="' + path + '"alt="' + data[i] + '"/></div>\
-                        <button class="btn btn-md rmImg-btn" type="button" name="' + path + '">Delete</button>\
+                        <button class="btn btn-md rmImg-btn" type="button" name="' + path + '" onclick="rmImage()">Delete</button>\
                         </div>\
                         </div>\
                         '
